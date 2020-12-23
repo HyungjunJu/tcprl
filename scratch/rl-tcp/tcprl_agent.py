@@ -31,6 +31,9 @@ class TCPAgent:
     def load_weights(self):
         return
 
+    def get_policy(self, state):
+        return
+
 
 class DeepSARSAAgent(TCPAgent):
     def __init__(self, state_size, action_size):
@@ -92,15 +95,15 @@ class A2CAgent(TCPAgent):
 
     def build_actor(self):
         actor = Sequential()
-        actor.add(Dense(24, input_dim=self.state_size, activation='relu', kernel_initializer='he_uniform'))
+        actor.add(Dense(12, input_dim=self.state_size, activation='relu', kernel_initializer='he_uniform'))
         actor.add(Dense(self.action_size, activation='softmax', kernel_initializer='he_uniform'))
         actor.summary()
         return actor
 
     def build_critic(self):
         critic = Sequential()
-        critic.add(Dense(24, input_dim=self.state_size, activation='relu', kernel_initializer='he_uniform'))
-        critic.add(Dense(24, input_dim=self.state_size, activation='relu', kernel_initializer='he_uniform'))
+        critic.add(Dense(12, input_dim=self.state_size, activation='relu', kernel_initializer='he_uniform'))
+        critic.add(Dense(12, input_dim=self.state_size, activation='relu', kernel_initializer='he_uniform'))
         critic.add(Dense(self.value_size, activation='linear', kernel_initializer='he_uniform'))
         critic.summary()
         return critic
@@ -110,6 +113,9 @@ class A2CAgent(TCPAgent):
         # print(state)
         # print(policy)
         return np.random.choice(self.action_size, 1, p=policy)[0]
+
+    def get_policy(self, state):
+        return self.actor.predict(state, batch_size=1).flatten()
 
     def actor_optimizer(self):
         action = K.placeholder(shape=[None, self.action_size])
@@ -181,15 +187,16 @@ class A3CAgent(TCPAgent):
 
     def build_actor(self):
         actor = Sequential()
-        actor.add(Dense(24, input_dim=self.state_size, activation='relu', kernel_initializer='he_uniform'))
+        actor.add(Dense(32, input_dim=self.state_size, activation='relu', kernel_initializer='he_uniform'))
+        actor.add(Dense(32, input_dim=32, activation='relu', kernel_initializer='he_uniform'))
         actor.add(Dense(self.action_size, activation='softmax', kernel_initializer='he_uniform'))
         #actor.summary()
         return actor
 
     def build_critic(self):
         critic = Sequential()
-        critic.add(Dense(24, input_dim=self.state_size, activation='relu', kernel_initializer='he_uniform'))
-        critic.add(Dense(24, input_dim=self.state_size, activation='relu', kernel_initializer='he_uniform'))
+        critic.add(Dense(32, input_dim=self.state_size, activation='relu', kernel_initializer='he_uniform'))
+        critic.add(Dense(32, input_dim=32, activation='relu', kernel_initializer='he_uniform'))
         critic.add(Dense(self.value_size, activation='linear', kernel_initializer='he_uniform'))
         #critic.summary()
         return critic

@@ -15,7 +15,7 @@ startSim = True
 iterationNum = 1
 
 port = 5555
-simTime = 10000
+simTime = 1000000
 stepTime = 0.5
 seed = 12
 simArgs = {"--duration": simTime, }
@@ -225,6 +225,7 @@ def normal_execute(agent_type=1, isTrain=True, port_adder=0, seed_adder=0):
     cwnd_max = env.action_space.high[0]
     trace = Traces(1)
     state_trace = StateTrace(1)
+    policy_trace = PolicyTrace()
     scores, episodes = [], []
     loss_trace = LossTrace(1, loss_window_size)
 
@@ -263,6 +264,7 @@ def normal_execute(agent_type=1, isTrain=True, port_adder=0, seed_adder=0):
             U_reward, U_old = get_reward_default(next_state, loss_trace, U_old)
             cwnd = next_state[5]
             state_trace.add_state(next_state)
+            policy_trace.add_policy(agent.get_policy(state_trans_normalized))
             if next_state[11] == 0:
                 loss_trace.loss(next_state[0], No_step)
 
@@ -292,8 +294,10 @@ def normal_execute(agent_type=1, isTrain=True, port_adder=0, seed_adder=0):
         if print_result:
             print(seg_acked * default_cwnd)
             state_trace.print_history(e)
+            policy_trace.print_policy(e)
 
         state_trace.reset()
+        policy_trace.reset()
         seg_acked = 0
         if e % weight_save_frequency == 0:
             agent.save_weights()

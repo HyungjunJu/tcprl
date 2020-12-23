@@ -121,6 +121,31 @@ class Traces:
         self.rtt_history.clear()
 
 
+class PolicyTrace:
+    def __init__(self):
+        self.policyHistory = []
+        self.time_max = -1
+
+    def add_policy(self, policy):
+        self.policyHistory.append(policy)
+
+    def reset(self):
+        self.policyHistory.clear()
+
+    def print_policy(self, idx):
+        try:
+            f = open(f"result/policy{idx}.txt", 'w')
+        except:
+            return
+        i = 0
+        for item in self.policyHistory:
+            data = f"{i}\t{item[0]}\t{item[1]}\t{item[2]}\t{item[3]}\t{item[4]}\n"
+            i += 1
+            f.write(data)
+        f.close()
+        return
+
+
 class StateTrace:
     def __init__(self, socketUuid):
         self.socketUuid = socketUuid
